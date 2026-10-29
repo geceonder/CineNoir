@@ -1,87 +1,94 @@
-const movieTitle= "Inception";
-console.log(movieTitle);
-
-let movieRating = 8.8;
-console.log(movieRating);
-
-movieRating = 9.0;
-console.log(movieRating);
-
-
-const movieGenre = "Science Fiction";
-const releaseYear = 2010;
-
-console.log(movieGenre);
-console.log(releaseYear);
-
-
-console.log("Movie: " + movieTitle);
-console.log("Genre: " + movieGenre);
-console.log("Year: " + releaseYear);
-console.log("Rating: " + movieRating);
-
-
-const movieOutput = document.querySelector("#movie-output");
-
-movieOutput.textContent =
-  "Movie: " + movieTitle +
-  " | Genre: " + movieGenre +
-  " | Year: " + releaseYear +
-  " | Rating: " + movieRating;
-
-  
-function updateMovieRating(newRating) {
-  movieRating = newRating;
-
-  movieOutput.textContent =
-    "Movie: " + movieTitle +
-    " | Genre: " + movieGenre +
-    " | Year: " + releaseYear +
-    " | Rating: " + movieRating;
-}
-
-// updateMovieRating(9.2);
-
-
-const movieList =[
-    {
-        title:"Inception",
-        rating:8.8,
-        year:2010,
-    },
-    {
-    title: "Interstellar",
-    rating: 8.7,
-    year: 2014,
-    genre: "Science Fiction"
-  },
-  {
-    title: "The Dark Knight",
-    rating: 9.0,
-    year: 2008,
-    genre: "Action"
-  }
-];
-
-console.log(movieList);
-console.log(movieList[0].title);
-console.log(movieList[1].rating);
-
 
 const movieGrid = document.querySelector("#movie-grid");
 
-movieList.forEach(function(movie) {
-  const card = document.createElement("article");
-  card.classList.add("movie-card");
 
-  card.innerHTML = `
-    <div class="movie-info">
-      <h2>${movie.title}</h2>
-      <p>Year: ${movie.year}</p>
-      <p>Genre: ${movie.genre}</p>
-      <p>Rating: ${movie.rating}</p>
-    </div>
-  `;
+function renderMovies(movies) {
+  movieGrid.innerHTML = "";
 
-  movieGrid.appendChild(card);
-});
+  movies.forEach(function (movie) {
+    const card = document.createElement("article");
+    card.className = "movie-card";
+
+    const poster = document.createElement("img");
+    poster.src = movie.poster_path
+      ? "https://image.tmdb.org/t/p/w500" + movie.poster_path
+      : movie.poster || "";
+    poster.alt = movie.title + " poster";
+
+    const title = document.createElement("h2");
+    title.textContent = movie.title;
+
+    const year = document.createElement("p");
+    year.textContent = "Year: " +
+      (movie.release_date
+        ? movie.release_date.slice(0, 4)
+        : movie.year || "Unknown");
+
+    const rating = document.createElement("p");
+    rating.textContent = "★ " +
+      (movie.vote_average ?? movie.rating ?? "N/A") + " / 10";
+
+    const description = document.createElement("p");
+    description.textContent = movie.overview || "";
+
+    card.append(poster, title, year, rating, description);
+    movieGrid.appendChild(card);
+  });
+}
+
+
+let allMovies = [];
+
+
+async function getMovies() {
+  try {
+    movieGrid.innerHTML = "<p>Loading movies...</p>";
+    const response = await fetch("/api/movies");
+
+    if (!response.ok) {
+      throw new Error("Film verileri alınamadı.");
+    }
+
+    const data = await response.json();
+
+    allMovies = data.results;
+renderMovies(allMovies);
+  } catch (error) {
+    console.error("Hata:", error.message);
+  }
+}
+
+getMovies();
+
+const searchInput = document.querySelector("#movie-search");
+
+searchInput.addEventListener("input", async function () {
+  console.log("Arama çalıştı!");
+
+  const searchText = searchInput.value.trim();
+
+  if (searchText === "") {
+    renderMovies(allMovies);
+    return;
+  }
+
+  try {
+    
+const searchURL = `/api/search?query=${encodeURIComponent(searchText)}`;
+
+const response = await fetch(searchURL);
+
+
+    if (!response.ok) {
+      throw new Error("Arama başarısız oldu.");
+    }
+
+    const data = await response.json();
+    renderMovies(data.results);
+  } catch (error) {
+  console.error("Hata:", error.message);
+  movieGrid.innerHTML =
+    "<p>Filmler yüklenemedi. Lütfen tekrar deneyin.</p>";
+}
+});  
+

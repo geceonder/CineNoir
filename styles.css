@@ -161,3 +161,53 @@ nav .logo {
     grid-template-columns: 1fr;
   }
 }
+
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  padding: 24px 0;
+}
+
+.movie-card {
+  overflow: hidden;
+  background-color: #202126;
+  color: #f5f0e8;
+  border: 1px solid #34343b;
+  border-radius: 12px;
+  transition: transform 0.25s ease;
+}
+
+.movie-card:hover {
+  transform: translateY(-5px);
+}
+
+.movie-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+}
+
+.movie-card h2 {
+  margin: 12px 0;
+  font-size: 18px;
+}
+
+.movie-card p {
+  margin: 8px 0;
+  color: #c4c1c8;
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .movie-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 500px) {
+  .movie-grid {
+    grid-template-columns: 1fr;
+  }
+}
