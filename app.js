@@ -41,8 +41,11 @@ let allMovies = [];
 
 
 async function getMovies() {
+  const movieGrid = document.getElementById("movie-grid");
+
+  movieGrid.innerHTML = "<p>Filmler yükleniyor...</p>";
+
   try {
-    movieGrid.innerHTML = "<p>Loading movies...</p>";
     const response = await fetch("/api/movies");
 
     if (!response.ok) {
@@ -50,13 +53,20 @@ async function getMovies() {
     }
 
     const data = await response.json();
-
     allMovies = data.results;
-renderMovies(allMovies);
+    renderMovies(allMovies);
+
   } catch (error) {
     console.error("Hata:", error.message);
+    movieGrid.innerHTML =
+      "<p>Filmler yüklenemedi. Lütfen tekrar deneyin.</p>";
+
+  } finally {
+    console.log("Film yükleme işlemi tamamlandı.");
   }
 }
+
+
 
 getMovies();
 
@@ -84,11 +94,20 @@ const response = await fetch(searchURL);
     }
 
     const data = await response.json();
-    renderMovies(data.results);
+
+if (data.results.length === 0) {
+  movieGrid.innerHTML = "<p>Film bulunamadı. Başka bir film deneyebilirsin.</p>";
+} else {
+  renderMovies(data.results);
+}
+
   } catch (error) {
   console.error("Hata:", error.message);
   movieGrid.innerHTML =
     "<p>Filmler yüklenemedi. Lütfen tekrar deneyin.</p>";
+}
+finally {
+  console.log("Film yükleme işlemi tamamlandı.");
 }
 });  
 
