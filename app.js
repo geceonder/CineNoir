@@ -40,6 +40,7 @@ function renderMovies(movies) {
 let allMovies = [];
 
 
+
 async function getMovies() {
   const movieGrid = document.getElementById("movie-grid");
 
@@ -58,13 +59,24 @@ async function getMovies() {
 
   } catch (error) {
     console.error("Hata:", error.message);
-    movieGrid.innerHTML =
-      "<p>Filmler yüklenemedi. Lütfen tekrar deneyin.</p>";
+
+    movieGrid.innerHTML = `
+      <div class="error-message">
+        <h3>Bir şeyler ters gitti!</h3>
+        <p>Filmler yüklenemedi. İnternet bağlantını kontrol et.</p>
+        <button id="retry-button">Tekrar dene</button>
+      </div>
+    `;
+
+    document
+      .getElementById("retry-button")
+      .addEventListener("click", getMovies);
 
   } finally {
     console.log("Film yükleme işlemi tamamlandı.");
   }
 }
+
 
 
 
@@ -101,11 +113,21 @@ if (data.results.length === 0) {
   renderMovies(data.results);
 }
 
-  } catch (error) {
+ } catch (error) {
   console.error("Hata:", error.message);
-  movieGrid.innerHTML =
-    "<p>Filmler yüklenemedi. Lütfen tekrar deneyin.</p>";
+
+  movieGrid.innerHTML = `
+    <div class="error-message">
+      <h3>Bir şeyler ters gitti!</h3>
+      <p>Filmler yüklenemedi. İnternet bağlantını kontrol et.</p>
+      <button id="retry-button">Tekrar dene</button>
+    </div>
+  `;
+  document
+  .getElementById("retry-button")
+  .addEventListener("click", getMovies);
 }
+
 finally {
   console.log("Film yükleme işlemi tamamlandı.");
 }
